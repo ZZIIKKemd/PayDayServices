@@ -1,0 +1,10 @@
+dbconf:
+  host: host adress
+  port: port
+  user: username
+  password: password
+  dbname: database name
+  tname: table na#
+uniconf:
+  key: unisender api key
+  list: unisender list id
