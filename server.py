@@ -90,7 +90,8 @@ class Server():
                     break
 
         async def start_background_tasks(app):
-            app['sender'] = asyncio.create_task(send_loop(app))
+            app['sender'] = asyncio.get_event_loop().create_task(
+                send_loop(app))
 
         async def cleanup_background_tasks(app):
             app['sender'].cancel()
