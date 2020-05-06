@@ -1,6 +1,7 @@
 config.yml
 docker-compose.yml
 log
+pid
 .vscode
 db
 __pycache__

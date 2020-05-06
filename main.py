@@ -1,5 +1,6 @@
 import logging
 import sys
+from os import getpid
 
 import yaml
 
@@ -10,6 +11,9 @@ from server import Server
 def main():
     open('log', 'w').close()
     logging.basicConfig(filename="log", level=logging.INFO)
+
+    with open('pid', 'w') as f:
+        f.write(str(getpid()))
 
     try:
         with open('config.yml') as file:
