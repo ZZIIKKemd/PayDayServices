@@ -1,5 +1,7 @@
-import asyncpg
 import ssl
+
+import asyncpg
+
 from logger import log_error
 
 
