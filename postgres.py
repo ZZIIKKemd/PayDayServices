@@ -1,5 +1,5 @@
 import asyncpg
-
+import ssl
 from logger import log_error
 
 
@@ -13,8 +13,10 @@ class DataBase:
         self.table = table
 
     async def start_pool(self):
+        sslContext = ssl.SSLContext()
+        sslContext.verify_mode = ssl.CERT_NONE
         self.pool = await asyncpg.create_pool(
-            host=self.host, port=self.port,
+            ssl=sslContext, host=self.host, port=self.port,
             user=self.user, password=self.pw, database=self.db)
 
     async def add_entry(self, email, timestamp):
