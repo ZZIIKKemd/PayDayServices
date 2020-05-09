@@ -1,10 +1,12 @@
 dbconf:
+  ssl: True or False
   host: host adress
   port: port
   user: username
   password: password
   dbname: database name
-  tname: table na#
+  tinname: table from third party name
+  toutname: table to unisender name
 uniconf:
   key: unisender api key
   list: unisender list id

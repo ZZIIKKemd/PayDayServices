@@ -47,21 +47,48 @@ class RoutesHandlers:
 
         return web.Response(text='День очищен от запросов')
 
+    async def add_raw_data(self, request):
+        data = request.query
+        db = request.app['db']
+
+        if 'name' in data:
+            name = data['name']
+        else:
+            return web.Response(text='В запросе не указано имя')
+
+        if 'email' in data:
+            email = data['email']
+        else:
+            return web.Response(text='В запросе не указана почта')
+
+        if 'phone' in data:
+            phone = data['phone']
+        else:
+            return web.Response(text='В запросе не указан телефон')
+
+        try:
+            await db.add_raw_entry(name, email, phone)
+        except Exception as e:
+            return web.Response(text='Ошибка: {}'.format(str(e)))
+
+        return web.Response(text='Данные записаны')
+
 
 class Server():
     def __init__(self, dbConfig, apiConfig):
         self.app = web.Application()
 
         self.app['db'] = DataBase(
-            dbConfig['host'], dbConfig['port'],
+            dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
             dbConfig['user'], dbConfig['password'],
-            dbConfig['dbname'], dbConfig['tname'])
+            dbConfig['dbname'], dbConfig['tinname'], dbConfig['toutname'])
         self.app['api'] = Api(apiConfig['key'], apiConfig['list'])
 
         handlers = RoutesHandlers()
         self.app.add_routes(
             [web.get('/add_entry', handlers.add_entry),
-             web.get('/remove_day', handlers.remove_day)])
+             web.get('/remove_day', handlers.remove_day),
+             web.get('/add_raw_data', handlers.add_raw_data)])
 
     def start(self):
         asyncio.get_event_loop().run_until_complete(
@@ -96,7 +123,7 @@ class Server():
         async def cleanup_background_tasks(app):
             app['sender'].cancel()
 
-        self.app.on_startup.append(start_background_tasks)
+        #self.app.on_startup.append(start_background_tasks)
         self.app.on_cleanup.append(cleanup_background_tasks)
 
         web.run_app(self.app)
