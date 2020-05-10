@@ -2,12 +2,14 @@ import ssl
 
 import asyncpg
 
-from logger import log_error
+from modules.logger import log_error
 
 
 class DataBase:
     def __init__(
-        self, isSsl, host, port, user, password, database, tableIn, tableOut):
+            self, isSsl, host, port,
+            user, password, database,
+            tableIn, tableOut):
         self.isSsl = isSsl
         self.host = host
         self.port = port

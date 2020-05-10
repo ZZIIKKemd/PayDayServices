@@ -1,6 +1,6 @@
 import aiohttp
 
-from logger import *
+from modules.logger import log_error, log_info
 
 
 class Api:

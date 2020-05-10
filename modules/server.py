@@ -4,10 +4,10 @@ from datetime import datetime
 from aiohttp import web
 from dateutil.tz import gettz
 
-from logger import log_error
-from postgres import DataBase
-from routes import Routes
-from unisender import Api
+from modules.logger import log_error
+from modules.postgres import DataBase
+from modules.routes import Routes
+from modules.unisender import Api
 
 
 class Server():
@@ -16,8 +16,8 @@ class Server():
 
         self.app['db'] = DataBase(
             dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
-            dbConfig['user'], dbConfig['password'],
-            dbConfig['dbname'], dbConfig['tinname'], dbConfig['toutname'])
+            dbConfig['user'], dbConfig['password'], dbConfig['dbname'],
+            dbConfig['tinname'], dbConfig['toutname'])
         self.app['api'] = Api(apiConfig['key'], apiConfig['list'])
 
         handlers = Routes()
@@ -56,7 +56,7 @@ class Server():
         async def cleanup_background_tasks(app):
             app['sender'].cancel()
 
-        #self.app.on_startup.append(start_background_tasks)
+        # self.app.on_startup.append(start_background_tasks)
         self.app.on_cleanup.append(cleanup_background_tasks)
 
         web.run_app(self.app)
