@@ -6,7 +6,7 @@ import yaml
 from modules.logger import log_error, log_init
 
 
-class MiscroService:
+class MicroService:
     def __init__(self, log, pid, config):
         thisDir = getcwd() + '/'
 

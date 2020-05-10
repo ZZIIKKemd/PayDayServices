@@ -1,4 +1,4 @@
-from microservice import MiscroService
+from microservice import MicroService
 from modules.server import Server
 
 class MainService(MiscroService):
