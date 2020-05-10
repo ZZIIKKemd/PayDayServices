@@ -9,8 +9,7 @@ from server import Server
 
 
 def main():
-    open('log', 'w').close()
-    logging.basicConfig(filename="log", level=logging.INFO)
+    log_init('log')
 
     with open('pid', 'w') as f:
         f.write(str(getpid()))
