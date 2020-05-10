@@ -56,7 +56,7 @@ class Server():
         async def cleanup_background_tasks(app):
             app['sender'].cancel()
 
-        # self.app.on_startup.append(start_background_tasks)
+        self.app.on_startup.append(start_background_tasks)
         self.app.on_cleanup.append(cleanup_background_tasks)
 
         web.run_app(self.app)
