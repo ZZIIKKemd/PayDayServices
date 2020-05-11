@@ -13,18 +13,33 @@ class Routes:
         data = request.query
         db = request.app['db']
 
+        if 'name' in data:
+            name = data['name']
+        else:
+            name = None
+
         if 'email' in data:
             email = data['email']
         else:
             return web.Response(text='В запросе не указана почта')
+        
+        if 'phone' in data:
+            phone = data['phone']
+        else:
+            phone = None
 
         if 'time' in data:
             time = data['time']
         else:
             return web.Response(text='В запросе не указано время отправки')
 
+        if 'list' in data:
+            listId = data['list']
+        else:
+            return web.Response(text='В запросе не указан ID списка в Unisender')
+
         try:
-            await db.add_entry(email, time)
+            await db.add_entry(name, email, phone, time, listId)
         except Exception as e:
             return web.Response(text='Ошибка: {}'.format(str(e)))
 

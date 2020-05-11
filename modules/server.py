@@ -18,7 +18,7 @@ class Server():
             dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
             dbConfig['user'], dbConfig['password'], dbConfig['dbname'],
             dbConfig['tinname'], dbConfig['toutname'])
-        self.app['api'] = Api(apiConfig['key'], apiConfig['list'])
+        self.app['api'] = Api(apiConfig['key'])
 
         handlers = Routes()
         self.app.add_routes(handlers.routes)
@@ -38,7 +38,9 @@ class Server():
                     now = datetime.now(gettz('Europe/Moscow'))
                     if now >= nextMsg['time']:
                         try:
-                            await app['api'].add(nextMsg['email'])
+                            await app['api'].add(
+                                nextMsg['name'], nextMsg['email'],
+                                nextMsg['phone'], nextMsg['list'])
                         except:
                             pass
                         else:

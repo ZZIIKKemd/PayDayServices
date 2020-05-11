@@ -29,9 +29,27 @@ class DataBase:
             ssl=sslContext, host=self.host, port=self.port,
             user=self.user, password=self.pw, database=self.db)
 
-    async def add_entry(self, email, timestamp):
-        query = "INSERT INTO {} (email, time) VALUES ('{}', '{}')".format(
-            self.tableOut, email, timestamp)
+    async def add_entry(self, name, email, phone, timestamp, listId):
+        if not name and not phone:
+            query = 'INSERT INTO {} (email, time, list)'
+            query += " VALUES ('{}', '{}', '{}')"
+            query = query.format(self.tableOut, email, timestamp, listId)
+        elif not name:
+            query = 'INSERT INTO {} (email, phone, time, list)'
+            query += " VALUES ('{}', '{}', '{}', '{}')"
+            query = query.format(
+                self.tableOut, email, phone, timestamp, listId)
+        elif not phone:
+            query = 'INSERT INTO {} (name, email, time, list)'
+            query += " VALUES ('{}', '{}', '{}', '{}')"
+            query = query.format(
+                self.tableOut, name, email, timestamp, listId)
+        else:
+            query = 'INSERT INTO {} (name, email, phone, time, list)'
+            query += " VALUES ('{}', '{}', '{}', '{}', '{}')"
+            query = query.format(
+                self.tableOut, name, email, phone, timestamp, listId)
+
         connection = await self.pool.acquire()
 
         try:
@@ -78,6 +96,31 @@ class DataBase:
         finally:
             await self.pool.release(connection)
 
+    async def get_day(self, day):
+        query = "SELECT * FROM {} WHERE time >= DATE '{}'"
+        query += " AND time < DATE '{}' + INTERVAL '1' DAY"
+        query = query.format(self.tableOut, day, day)
+        connection = await self.pool.acquire()
+
+        try:
+            await connection.execute("SET timezone = 'Europe/Moscow'")
+            data = await connection.fetch(query)
+        except Exception as e:
+            text = 'Не удалось получить день из базы.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+        if data:
+            records = list()
+            for record in data:
+                records.append(dict(record.items()))
+            return records
+        else:
+            return None
+
     async def clear_day(self, day):
         query = "DELETE FROM {} WHERE time >= DATE '{}'"
         query += " AND time < DATE '{}' + INTERVAL '1' DAY"
@@ -105,6 +148,43 @@ class DataBase:
             await connection.execute(query)
         except Exception as e:
             text = 'Не удалось добавить запись в подготовительную базу.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+    async def get_raw_data(self):
+        query = 'SELECT * FROM {}'.format(self.tableIn)
+        connection = await self.pool.acquire()
+
+        try:
+            data = await connection.fetch(query)
+        except Exception as e:
+            text = 'Не удалось получить данные из подготовительной базы.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+        if data:
+            records = list()
+            for record in data:
+                records.append(dict(record.items()))
+            return records
+        else:
+            return None
+
+    async def set_raw_used(self, id):
+        query = 'UPDATE {} SET used = true WHERE id = {}'.format(
+            self.tableIn, id)
+        connection = await self.pool.acquire()
+
+        try:
+            await connection.execute(query)
+        except Exception as e:
+            text = 'Не удалось отметить запись как использованную.'
             text += '\nОшибка: {}\nЗапрос: {}'
             log_error(text.format(str(e), query))
             raise(e)
