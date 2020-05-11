@@ -18,7 +18,7 @@ async def move(dbConfig, uniConfig):
     queue = await db.get_day(tomorrow)
     thirdOfNext = len(queue) // 3
 
-    queue = await db.get_raw_data()
+    queue = await db.get_raw_fresh_unused()
     goods = list()
     for data in queue:
         email = data['email']

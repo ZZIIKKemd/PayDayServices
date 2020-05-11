@@ -154,8 +154,9 @@ class DataBase:
         finally:
             await self.pool.release(connection)
 
-    async def get_raw_data(self):
-        query = 'SELECT * FROM {}'.format(self.tableIn)
+    async def get_raw_fresh_unused(self):
+        query = 'SELECT * FROM {} WHERE used = false ORDER BY id DESC'.format(
+            self.tableIn)
         connection = await self.pool.acquire()
 
         try:
