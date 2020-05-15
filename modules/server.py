@@ -4,11 +4,11 @@ from datetime import datetime
 from aiohttp import web
 from dateutil.tz import gettz
 
+from modules.goip import SmsRelay
 from modules.logger import log_error
 from modules.postgres import DataBase
 from modules.routes import Routes
 from modules.unisender import Api
-from modules.goip import SmsRelay
 
 
 class Server():

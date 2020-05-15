@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from random import randint
 
 import aiohttp
 from dateutil.tz import gettz
@@ -14,7 +15,6 @@ class SmsRelay:
         self.pw = password
         self.sims = simCount
         self.texts = messages
-        self.currSim = 1
 
     def form_messages(self, name):
         now = datetime.now(gettz('Europe/Moscow'))
@@ -35,7 +35,7 @@ class SmsRelay:
         sendData = {
             'u': self.user,
             'p': self.pw,
-            'l': self.currSim,
+            'l': randint(1, self.sims),
             'n': str(phone),
             'm': msg}
 
@@ -55,7 +55,3 @@ class SmsRelay:
             else:
                 log_info(
                     'Смс {} на номер {} отправлено'.format(msg, phone))
-        
-            self.currSim += 1
-            if self.currSim > self.sims:
-                self.currSim = 1

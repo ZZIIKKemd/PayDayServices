@@ -25,7 +25,7 @@ class Routes:
             email = data['email']
         else:
             return web.Response(text='В запросе не указана почта')
-        
+
         if 'phone' in data:
             phone = data['phone']
         else:
