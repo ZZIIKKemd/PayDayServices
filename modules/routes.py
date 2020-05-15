@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from aiohttp import web
+from dateutil.tz import gettz
 
 
 class Routes:
@@ -64,6 +67,7 @@ class Routes:
     async def add_raw_data(self, request):
         data = request.query
         db = request.app['db']
+        relay = request.app['sms']
 
         if 'name' in data:
             name = data['name']
@@ -82,6 +86,13 @@ class Routes:
 
         try:
             await db.add_raw_entry(name, email, phone)
+        except Exception as e:
+            return web.Response(text='Ошибка: {}'.format(str(e)))
+
+        smsData = relay.form_messages(name)
+        try:
+            await db.add_sms(smsData[0][0], '8'+phone[1:], smsData[0][1])
+            await db.add_sms(smsData[1][0], '8'+phone[1:], smsData[1][1])
         except Exception as e:
             return web.Response(text='Ошибка: {}'.format(str(e)))
 

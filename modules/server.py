@@ -8,17 +8,22 @@ from modules.logger import log_error
 from modules.postgres import DataBase
 from modules.routes import Routes
 from modules.unisender import Api
+from modules.goip import SmsRelay
 
 
 class Server():
-    def __init__(self, dbConfig, apiConfig):
+    def __init__(self, dbConfig, apiConfig, smsConfig):
         self.app = web.Application()
 
         self.app['db'] = DataBase(
             dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
-            dbConfig['user'], dbConfig['password'], dbConfig['dbname'],
-            dbConfig['tinname'], dbConfig['toutname'])
+            dbConfig['user'], dbConfig['password'], dbConfig['db'],
+            dbConfig['tinput'], dbConfig['tuni'],  dbConfig['tsms'])
         self.app['api'] = Api(apiConfig['key'])
+        self.app['sms'] = SmsRelay(
+            smsConfig['host'], smsConfig['port'],
+            smsConfig['user'], smsConfig['password'],
+            smsConfig['simcount'], smsConfig['messages'])
 
         handlers = Routes()
         self.app.add_routes(handlers.routes)
@@ -33,18 +38,33 @@ class Server():
                     await asyncio.sleep(1)
 
                     nextMsg = await app['db'].get_next()
-                    if not nextMsg:
+                    nextSms = await app['db'].get_next_sms()
+                    if not nextMsg and not nextSms:
                         continue
+
                     now = datetime.now(gettz('Europe/Moscow'))
-                    if now >= nextMsg['time']:
-                        try:
-                            await app['api'].add(
-                                nextMsg['name'], nextMsg['email'],
-                                nextMsg['phone'], nextMsg['list'])
-                        except:
-                            pass
-                        else:
-                            await app['db'].remove_entry(nextMsg['id'])
+
+                    if nextMsg:
+                        if now >= nextMsg['time']:
+                            try:
+                                await app['api'].add(
+                                    nextMsg['name'], nextMsg['email'],
+                                    nextMsg['phone'], nextMsg['list'])
+                            except:
+                                pass
+                            else:
+                                await app['db'].remove_entry(nextMsg['id'])
+
+                    if nextSms:
+                        if now >= nextSms['time']:
+                            try:
+                                await app['sms'].send(
+                                    nextSms['text'], nextSms['phone'])
+                            except Exception as e:
+                                pass
+                            else:
+                                await app['db'].remove_sms(nextSms['id'])
+
                 except asyncio.CancelledError:
                     break
                 except Exception as e:

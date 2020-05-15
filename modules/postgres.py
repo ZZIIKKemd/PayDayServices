@@ -9,7 +9,7 @@ class DataBase:
     def __init__(
             self, isSsl, host, port,
             user, password, database,
-            tableIn, tableOut):
+            tableIn, tableUni, tableSms):
         self.isSsl = isSsl
         self.host = host
         self.port = port
@@ -17,7 +17,8 @@ class DataBase:
         self.pw = password
         self.db = database
         self.tableIn = tableIn
-        self.tableOut = tableOut
+        self.tableUni = tableUni
+        self.tableSms = tableSms
 
     async def start_pool(self):
         if self.isSsl:
@@ -33,22 +34,22 @@ class DataBase:
         if not name and not phone:
             query = 'INSERT INTO {} (email, time, list)'
             query += " VALUES ('{}', '{}', '{}')"
-            query = query.format(self.tableOut, email, timestamp, listId)
+            query = query.format(self.tableUni, email, timestamp, listId)
         elif not name:
             query = 'INSERT INTO {} (email, phone, time, list)'
             query += " VALUES ('{}', '{}', '{}', '{}')"
             query = query.format(
-                self.tableOut, email, phone, timestamp, listId)
+                self.tableUni, email, phone, timestamp, listId)
         elif not phone:
             query = 'INSERT INTO {} (name, email, time, list)'
             query += " VALUES ('{}', '{}', '{}', '{}')"
             query = query.format(
-                self.tableOut, name, email, timestamp, listId)
+                self.tableUni, name, email, timestamp, listId)
         else:
             query = 'INSERT INTO {} (name, email, phone, time, list)'
             query += " VALUES ('{}', '{}', '{}', '{}', '{}')"
             query = query.format(
-                self.tableOut, name, email, phone, timestamp, listId)
+                self.tableUni, name, email, phone, timestamp, listId)
 
         connection = await self.pool.acquire()
 
@@ -64,7 +65,7 @@ class DataBase:
             await self.pool.release(connection)
 
     async def get_next(self):
-        query = 'SELECT * FROM {} ORDER BY time'.format(self.tableOut)
+        query = 'SELECT * FROM {} ORDER BY time'.format(self.tableUni)
         connection = await self.pool.acquire()
 
         try:
@@ -84,7 +85,7 @@ class DataBase:
             return None
 
     async def remove_entry(self, id):
-        query = 'DELETE FROM {} WHERE id={}'.format(self.tableOut, id)
+        query = 'DELETE FROM {} WHERE id={}'.format(self.tableUni, id)
         connection = await self.pool.acquire()
 
         try:
@@ -99,7 +100,7 @@ class DataBase:
     async def get_day(self, day):
         query = "SELECT * FROM {} WHERE time >= DATE '{}'"
         query += " AND time < DATE '{}' + INTERVAL '1' DAY"
-        query = query.format(self.tableOut, day, day)
+        query = query.format(self.tableUni, day, day)
         connection = await self.pool.acquire()
 
         try:
@@ -124,7 +125,7 @@ class DataBase:
     async def clear_day(self, day):
         query = "DELETE FROM {} WHERE time >= DATE '{}'"
         query += " AND time < DATE '{}' + INTERVAL '1' DAY"
-        query = query.format(self.tableOut, day, day)
+        query = query.format(self.tableUni, day, day)
         connection = await self.pool.acquire()
 
         try:
@@ -189,5 +190,55 @@ class DataBase:
             text += '\nОшибка: {}\nЗапрос: {}'
             log_error(text.format(str(e), query))
             raise(e)
+        finally:
+            await self.pool.release(connection)
+
+    async def add_sms(self, text, phone, time):
+        query = 'INSERT INTO {} (text, phone, time)'
+        query += " VALUES ('{}', '{}', '{}')"
+        query = query.format(self.tableSms, text, phone, time)
+        connection = await self.pool.acquire()
+
+        try:
+            await connection.execute("SET timezone = 'Europe/Moscow'")
+            await connection.execute(query)
+        except Exception as e:
+            text = 'Не удалось добавить смс в очередь.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+    async def get_next_sms(self):
+        query = 'SELECT * FROM {} ORDER BY time'.format(self.tableSms)
+        connection = await self.pool.acquire()
+
+        try:
+            await connection.execute("SET timezone = 'Europe/Moscow'")
+            data = await connection.fetchrow(query)
+        except Exception as e:
+            text = 'Не удалось получить ближайшую смс.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+        if data:
+            return dict(data.items())
+        else:
+            return None
+
+    async def remove_sms(self, id):
+        query = 'DELETE FROM {} WHERE id={}'.format(self.tableSms, id)
+        connection = await self.pool.acquire()
+
+        try:
+            await connection.execute(query)
+        except Exception as e:
+            text = 'Не удалось удалить нужную смс из очереди.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
         finally:
             await self.pool.release(connection)

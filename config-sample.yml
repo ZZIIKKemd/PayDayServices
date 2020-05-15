@@ -4,9 +4,19 @@ dbconf:
   port: port
   user: username
   password: password
-  dbname: database name
-  tinname: table from third party name
-  toutname: table to unisender name
+  db: database name
+  tinput: table from third party name
+  tuni: table to unisender api name
+  tsms: table to SMS relay name
 uniconf:
   key: unisender api key
-  list: unisender list id
+  pluslist: list to paste entrys from api
+goipconf:
+  host: host adress
+  port: port
+  user: username of admin
+  password: password of admin
+  simcount: number of active SIM cards in relay
+  messages:
+    - first message
+    - second message
