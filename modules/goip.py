@@ -15,6 +15,14 @@ class SmsRelay:
         self.pw = password
         self.sims = simCount
         self.texts = messages
+        self.tele2Nums = [
+            '900', '901', '902', '904', '908',
+            '950', '951', '952', '953', '958',
+            '977', '978', '979', '991', '992',
+            '993', '994', '995', '996', '999']
+
+    def tele2_phone(self, phone):
+        return phone[1:4] in self.tele2Nums
 
     def form_messages(self, name):
         now = datetime.now(gettz('Europe/Moscow'))

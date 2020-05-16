@@ -89,11 +89,12 @@ class Routes:
         except Exception as e:
             return web.Response(text='Ошибка: {}'.format(str(e)))
 
-        smsData = relay.form_messages(name)
-        try:
-            await db.add_sms(smsData[0][0], '8'+phone[1:], smsData[0][1])
-            await db.add_sms(smsData[1][0], '8'+phone[1:], smsData[1][1])
-        except Exception as e:
-            return web.Response(text='Ошибка: {}'.format(str(e)))
+        if relay.tele2_phone(phone):
+            smsData = relay.form_messages(name)
+            try:
+                await db.add_sms(smsData[0][0], '8'+phone[1:], smsData[0][1])
+                await db.add_sms(smsData[1][0], '8'+phone[1:], smsData[1][1])
+            except Exception as e:
+                return web.Response(text='Ошибка: {}'.format(str(e)))
 
         return web.Response(text='Данные записаны')
