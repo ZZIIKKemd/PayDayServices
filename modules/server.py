@@ -15,15 +15,9 @@ class Server():
     def __init__(self, dbConfig, apiConfig, smsConfig):
         self.app = web.Application()
 
-        self.app['db'] = DataBase(
-            dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
-            dbConfig['user'], dbConfig['password'], dbConfig['db'],
-            dbConfig['tinput'], dbConfig['tuni'],  dbConfig['tsms'])
-        self.app['api'] = Api(apiConfig['key'])
-        self.app['sms'] = SmsRelay(
-            smsConfig['host'], smsConfig['port'],
-            smsConfig['user'], smsConfig['password'],
-            smsConfig['simcount'], smsConfig['messages'])
+        self.app['db'] = DataBase(dbConfig)
+        self.app['api'] = Api(apiConfig)
+        self.app['sms'] = SmsRelay(smsConfig)
 
         handlers = Routes()
         self.app.add_routes(handlers.routes)

@@ -4,9 +4,9 @@ from modules.logger import log_error, log_info
 
 
 class Api:
-    def __init__(self, key):
+    def __init__(self, config):
         self.url = 'https://api.unisender.com/ru/api/subscribe'
-        self.api_key = key
+        self.api_key = config['key']
         self.format = 'json'
 
     async def add(self, name, email, phone, listId):

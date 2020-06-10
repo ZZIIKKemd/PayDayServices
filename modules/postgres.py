@@ -6,19 +6,16 @@ from modules.logger import log_error
 
 
 class DataBase:
-    def __init__(
-            self, isSsl, host, port,
-            user, password, database,
-            tableIn, tableUni, tableSms):
-        self.isSsl = isSsl
-        self.host = host
-        self.port = port
-        self.user = user
-        self.pw = password
-        self.db = database
-        self.tableIn = tableIn
-        self.tableUni = tableUni
-        self.tableSms = tableSms
+    def __init__(self, config):
+        self.isSsl = config['ssl']
+        self.host = config['host']
+        self.port = config['port']
+        self.user = config['user']
+        self.pw = config['password']
+        self.db = config['db']
+        self.tableIn = config['tinput']
+        self.tableUni = config['tuni']
+        self.tableSms = config['tsms']
 
     async def start_pool(self):
         if self.isSsl:

@@ -8,13 +8,13 @@ from modules.logger import log_error, log_info
 
 
 class SmsRelay:
-    def __init__(self, host, port, user, password, simCount, messages):
-        self.url = 'http://{}:{}/default/en_US/send.html'.format(host, port)
-        self.port = port
-        self.user = user
-        self.pw = password
-        self.sims = simCount
-        self.texts = messages
+    def __init__(self, config):
+        self.url = 'http://{}:{}/default/en_US/send.html'.format(
+            config['host'], config['port'])
+        self.user = config['user']
+        self.pw = config['password']
+        self.sims = config['simcount']
+        self.texts = config['messages']
         self.tele2Nums = [
             '900', '901', '902', '904', '908',
             '950', '951', '952', '953', '958',
