@@ -1,4 +1,4 @@
-# EmailPusher
+# PayDay data handlers
 
 ## Зависимости
 Надо иметь установленные python>=3.6 и pip к нему.  
