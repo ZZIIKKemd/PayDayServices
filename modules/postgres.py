@@ -16,6 +16,8 @@ class DataBase:
         self.tableIn = config['tinput']
         self.tableUni = config['tuni']
         self.tableSms = config['tsms']
+        self.tablePorts = config['tports']
+        self.tableToCheck = config['tcheck']
 
     async def start_pool(self):
         if self.isSsl:
@@ -239,3 +241,45 @@ class DataBase:
             log_error(text.format(str(e), query))
         finally:
             await self.pool.release(connection)
+
+    async def get_ports(self):
+        query = 'SELECT * FROM {}'.format(self.tablePorts)
+        connection = await self.pool.acquire()
+
+        try:
+            data = await connection.fetch(query)
+        except Exception as e:
+            text = 'Не удалось получить список портов.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+        if data:
+            records = list()
+            for record in data:
+                records.append(dict(record.items()))
+            return records
+        else:
+            return None
+
+    async def count_sms_by_port(self, port):
+        query = 'SELECT COUNT(*) FROM {} WHERE port={}'
+        query = query.format(self.tableToCheck, port)
+        connection = await self.pool.acquire()
+
+        try:
+            data = await connection.fetch(query)
+        except Exception as e:
+            text = 'Не удалось получить список смс по номера порта.'
+            text += '\nОшибка: {}\nЗапрос: {}'
+            log_error(text.format(str(e), query))
+            raise(e)
+        finally:
+            await self.pool.release(connection)
+
+        if data:
+            return data[0]['count']
+        else:
+            return None

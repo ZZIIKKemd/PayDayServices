@@ -1,18 +1,20 @@
 dbconf:
-  ssl: True or False
-  host: host adress
+  host: PostgreSQL database host adress
   port: port
+  ssl: True or False
   user: username
   password: password
-  db: database name
-  tinput: table from third party name
-  tuni: table to unisender api name
-  tsms: table to SMS relay name
+  db: name
+  tinput: table from third party
+  tuni: table to unisender api
+  tsms: table with SMS relay timed
+  tports: table with sms relays ports list
+  tcheck: table with sms relay not timed
 uniconf:
   key: unisender api key
   pluslist: list to paste entrys from api
 goipconf:
-  host: host adress
+  host: GoIP relay host adress
   port: port
   user: username of admin
   password: password of admin
@@ -20,3 +22,6 @@ goipconf:
   messages:
     - first message
     - second message
+teleconf:
+  token: telegram token
+  chat: telegram chat id

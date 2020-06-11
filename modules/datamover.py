@@ -7,10 +7,7 @@ from modules.postgres import DataBase
 
 
 async def move(dbConfig, uniConfig):
-    db = DataBase(
-        dbConfig['ssl'], dbConfig['host'], dbConfig['port'],
-        dbConfig['user'], dbConfig['password'], dbConfig['db'],
-        dbConfig['tinput'], dbConfig['tuni'])
+    db = DataBase(dbConfig)
     await db.start_pool()
 
     time = datetime.now(gettz('Europe/Moscow')) + timedelta(days=1)
