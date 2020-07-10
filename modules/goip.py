@@ -39,17 +39,10 @@ class SmsRelay:
 
         return smsData
 
-    async def send(self, msg, phone):
-        sendData = {
-            'u': self.user,
-            'p': self.pw,
-            'l': randint(1, self.sims),
-            'n': str(phone),
-            'm': msg}
-
+    async def __send(self, msgData):
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(self.url, params=sendData) as resp:
+                async with session.get(self.url, params=msgData) as resp:
                     pass
         except aiohttp.ServerDisconnectedError as resp:
             if not resp.message.code == 200:
@@ -59,7 +52,34 @@ class SmsRelay:
             if 'ERROR' in resp.message.reason:
                 text = 'Не получилось отправить смс {} на номер {}'
                 text += '\nОшибка: {}'
-                log_error(text.format(msg, phone, resp.message.reason))
+                log_error(text.format(
+                    msgData['m'], msgData['p'], resp.message.reason))
             else:
-                log_info(
-                    'Смс {} на номер {} отправлено'.format(msg, phone))
+                log_info('Смс {} на номер {} отправлено'.format(
+                        msgData['m'], msgData['p']))
+
+    async def send_specific_sim(self, sim, msg, phone):
+        sendData = {
+            'u': self.user,
+            'p': self.pw,
+            'l': str(sim),
+            'n': str(phone),
+            'm': msg}
+        await self.__send(sendData)
+
+    async def send_random_sim(self, msg, phone):
+        sendData = {
+            'u': self.user,
+            'p': self.pw,
+            'l': randint(1, self.sims),
+            'n': str(phone),
+            'm': msg}
+        await self.__send(sendData)
+
+    async def test_send(self, phone):
+        textIndex = 0
+        for sim in range(self.sims):
+            await self.send_specific_sim(sim+1, self.texts[textIndex], phone)
+            textIndex += 1
+            if textIndex == len(self.texts):
+                textIndex = 0

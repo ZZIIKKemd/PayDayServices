@@ -52,7 +52,7 @@ class Server():
                     if nextSms:
                         if now >= nextSms['time']:
                             try:
-                                await app['sms'].send(
+                                await app['sms'].send_random_sim(
                                     nextSms['text'], nextSms['phone'])
                             except Exception as e:
                                 pass

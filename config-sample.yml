@@ -25,3 +25,24 @@ goipconf:
 teleconf:
   token: telegram token
   chat: telegram chat id
+senderconf:
+  phone: phone number of sms receiver
+  relays:
+    -
+      host: GoIP relay host adress
+      port: port
+      user: username of admin
+      password: password of admin
+      simcount: number of active SIM cards in relay
+      messages:
+        - first message
+        - second message
+    -
+      host: GoIP relay host adress
+      port: port
+      user: username of admin
+      password: password of admin
+      simcount: number of active SIM cards in relay
+      messages:
+        - first message
+        - second message
