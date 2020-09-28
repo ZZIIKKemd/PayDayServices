@@ -1,3 +1,5 @@
+servconf:
+  port: desired port
 dbconf:
   host: PostgreSQL database host adress
   port: port

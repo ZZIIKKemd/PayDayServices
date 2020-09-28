@@ -12,7 +12,7 @@ from modules.unisender import Api
 
 
 class Server():
-    def __init__(self, dbConfig, apiConfig, smsConfig):
+    def __init__(self, servConfig, dbConfig, apiConfig, smsConfig):
         self.app = web.Application()
 
         self.app['db'] = DataBase(dbConfig)
@@ -21,6 +21,8 @@ class Server():
 
         handlers = Routes()
         self.app.add_routes(handlers.routes)
+
+        self.config = servConfig
 
     def start(self):
         asyncio.get_event_loop().run_until_complete(
@@ -75,4 +77,4 @@ class Server():
         self.app.on_startup.append(start_background_tasks)
         self.app.on_cleanup.append(cleanup_background_tasks)
 
-        web.run_app(self.app)
+        web.run_app(self.app, port=self.config['port'])

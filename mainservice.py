@@ -6,8 +6,8 @@ class MainService(MicroService):
         super().__init__('main.log', 'main.pid', 'config.yml')
 
         server = Server(
-            self.config['dbconf'], self.config['uniconf'],
-            self.config['goipconf'])
+            self.config['servconf'], self.config['dbconf'],
+            self.config['uniconf'], self.config['goipconf'])
         server.start()
 
 if __name__ == "__main__":
