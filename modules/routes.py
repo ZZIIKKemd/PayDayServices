@@ -68,6 +68,7 @@ class Routes:
         data = request.query
         db = request.app['db']
         relay = request.app['sms']
+        api = request.app['api']
 
         if 'name' in data:
             name = data['name']
@@ -86,6 +87,11 @@ class Routes:
 
         try:
             await db.add_raw_entry(name, email, phone)
+        except Exception as e:
+            return web.Response(text='Ошибка: {}'.format(str(e)))
+
+        try:
+            await api.add(name, email, phone)
         except Exception as e:
             return web.Response(text='Ошибка: {}'.format(str(e)))
 

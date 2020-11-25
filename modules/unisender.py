@@ -7,13 +7,14 @@ class Api:
     def __init__(self, config):
         self.url = 'https://api.unisender.com/ru/api/subscribe'
         self.api_key = config['key']
+        self.default_list = config['pluslist']
         self.format = 'json'
 
-    async def add(self, name, email, phone, listId):
+    async def add(self, name, email, phone, listId=None):
         pushData = {
             'api_key': self.api_key,
             'fields[email]': email,
-            'list_ids': listId,
+            'list_ids': listId or self.default_list,
             'double_optin': 3,
             'format': self.format}
         if name:
