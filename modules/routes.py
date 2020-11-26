@@ -90,10 +90,11 @@ class Routes:
         except Exception as e:
             return web.Response(text='Ошибка: {}'.format(str(e)))
 
-        try:
-            await api.add(name, email, phone)
-        except Exception as e:
-            return web.Response(text='Ошибка: {}'.format(str(e)))
+        if api.mailru_adress(email):
+            try:
+                await api.add(name, email, phone)
+            except Exception as e:
+                return web.Response(text='Ошибка: {}'.format(str(e)))
 
         if relay.tele2_phone(phone):
             smsData = relay.form_messages(name)

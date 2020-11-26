@@ -34,3 +34,10 @@ class Api:
                     log_error(text.format(email, data['error']))
                 else:
                     log_info('Email {} записан'.format(email))
+
+    def mailru_adress(self, email):
+        is_mailru = email.endswith('@mail.ru')
+        is_mailru = is_mailru or email.endswith('@bk.ru')
+        is_mailru = is_mailru or email.endswith('@list.ru')
+        is_mailru = is_mailru or email.endswith('@inbox.ru')
+        return is_mailru
