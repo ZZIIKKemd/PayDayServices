@@ -9,6 +9,7 @@ from modules.logger import log_error, log_init
 class MicroService:
     def __init__(self, log, pid, config):
         thisDir = getcwd() + '/'
+        print(thisDir)
 
         log_init(thisDir+log)
 

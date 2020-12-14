@@ -1,7 +1,7 @@
-config.yml
-docker-compose.yml
-*.log
-*.pid
 .vscode
-db
+.code-workspace.code-workspace
 __pycache__
+db
+.log
+docker-compose.yml
+config.yml
