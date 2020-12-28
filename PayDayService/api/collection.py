@@ -1,4 +1,3 @@
-
 from typing import Dict
 
 from api.abstract import Api
