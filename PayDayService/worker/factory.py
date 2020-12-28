@@ -17,10 +17,6 @@ class WorkerFactory:
 
         if name == 'addraw':
             worker = AddRawDataWorker(name, config)
-        # elif config['type'] == 'goip':
-        #     worker = Goip(name, config)
-        # elif config['type'] == 'telegram':
-        #     worker = Telegram(name, config)
         else:
             s = 'Неизвестный вид воркера "{}"'.format(name)
             raise WorkerConfigurationException(s)
