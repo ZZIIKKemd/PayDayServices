@@ -1,17 +1,9 @@
 from typing import Any, Union
 
-from common.exception import ServiceException
-
 from api.abstract import ApiConfigurationException
 from api.type.goip import Goip
 from api.type.telegram import Telegram
 from api.type.unisender import Unisender
-
-POSSIBLEAPIS = ('unisender', 'goip', 'telegram')
-
-
-class ApiFactoryException(ServiceException):
-    pass
 
 
 class ApiFactory:
@@ -30,23 +22,15 @@ class ApiFactory:
             s = s.format(name)
             raise ApiConfigurationException(s)
 
-        if not config['type'] in POSSIBLEAPIS:
-            s = 'Неизвестный тип "{}" у параметра API "{}". '
-            s += 'Возможные варианты: ' + ','.join(POSSIBLEAPIS)
-            s = s.format(config['type'], name)
-            raise ApiConfigurationException(s)
-
-        api = None
         if config['type'] == 'unisender':
             api = Unisender(name, config)
         elif config['type'] == 'goip':
             api = Goip(name, config)
         elif config['type'] == 'telegram':
             api = Telegram(name, config)
-
-        if not api:
-            s = 'Неизвестный тип API "{}" с идентификатором "{}"'
+        else:
+            s = 'Неизвестный тип "{}" у параметра API "{}".'
             s = s.format(config['type'], name)
-            raise ApiFactoryException(s)
+            raise ApiConfigurationException(s)
 
         return api
