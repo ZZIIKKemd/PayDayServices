@@ -1,5 +1,7 @@
 from typing import Dict
 
+from aiohttp.web_request import Request
+
 from common.exception import ServiceException
 
 
@@ -57,6 +59,16 @@ class RoutedWorker(Worker):
 
         self._is_correct_field('route', str)
         self._route = config['route']
+
+    def get_path(self) -> str:
+        """Returns web route of the worker
+        """
+        return '/' + self._route
+
+    def get(self, request: Request) -> None:
+        """Work, that should be done on web route access
+        """
+        raise NotImplementedError
 
 
 class LoopedWorker(Worker):
