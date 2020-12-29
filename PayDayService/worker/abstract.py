@@ -1,7 +1,8 @@
 from typing import Dict
 
 from aiohttp.web_request import Request
-
+from api.collection import ApiCollection
+from common.database import Database
 from common.exception import ServiceException
 
 
@@ -16,11 +17,12 @@ class WorkerException(ServiceException):
 class Worker:
     _type = ''
 
-    def __init__(self, name: str, config: Dict):
+    def __init__(self, name: str, config: Dict, db: Database):
         """Abstract worker class with basic initialization
         """
         self._name = name
         self._config = config
+        self._db = db
 
     def get_name(self) -> str:
         """Returns worker identifier
@@ -32,7 +34,7 @@ class Worker:
         """
         return self._type
 
-    def _is_correct_field(self, fieldname: str, fieldtype: type) -> bool:
+    def _check_config(self, fieldname: str, fieldtype: type) -> bool:
         """Checks if the specified field of worker configuration is correct
         and matches the given type
         """
@@ -51,13 +53,13 @@ class Worker:
 
 
 class RoutedWorker(Worker):
-    def __init__(self, name: str, config: Dict):
+    def __init__(self, name: str, config: Dict, db: Database):
         """Abstract routed worker class with basic initialization
         """
-        super().__init__(name, config)
+        super().__init__(name, config, db)
         self._type = 'routed'
 
-        self._is_correct_field('route', str)
+        self._check_config('route', str)
         self._route = config['route']
 
     def get_path(self) -> str:
@@ -65,20 +67,39 @@ class RoutedWorker(Worker):
         """
         return '/' + self._route
 
-    def get(self, request: Request) -> None:
-        """Work, that should be done on web route access
+    def run(self, request: Request) -> None:
+        """Work, that should be done on web route access. Requires implementation.
         """
         raise NotImplementedError
 
 
 class LoopedWorker(Worker):
-    def __init__(self, name: str, config: Dict):
+    def __init__(self, name: str, config: Dict, db: Database):
         """Abstract looped worker class with basic initialization
         """
-        super().__init__(name, config)
+        super().__init__(name, config, db)
         self._type = 'looped'
 
     def run(self) -> None:
-        """Work, that should be done each loop
+        """Work, that should be done each loop. Requires implementation.
+        """
+        raise NotImplementedError
+
+
+class ApiUser(Worker):
+    def __init__(self,
+                 name: str,
+                 config: Dict,
+                 db: Database,
+                 api: ApiCollection):
+        """Abstract API using worker class with basic initialization
+        """
+        super().__init__(name, config, db)
+
+        self._check_config('apis', Dict[str, str])
+        self._bind_apis()
+
+    def _bind_apis(self) -> None:
+        """Bind apis to class fields. Requires implementation.
         """
         raise NotImplementedError
