@@ -29,7 +29,7 @@ class Api:
         """
         return self._type
 
-    def _is_correct_field(self, fieldname: str, fieldtype: type) -> bool:
+    def _check_config(self, fieldname: str, fieldtype: type) -> bool:
         """Checks if the specified field of API configuration is correct
         and matches the given type
         """
