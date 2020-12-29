@@ -21,20 +21,19 @@ class Goip(Api):
         """
         super().__init__(name, config)
 
-        correcthost = self._check_config('host', str)
-        correctport = self._check_config('port', int)
-        if correcthost and correctport:
-            self._url = 'http://{}:{}/default/en_US/send.html'.format(
-                config['host'], config['port'])
+        self._check_config('host', str)
+        self._check_config('port', int)
+        self._url = 'http://{}:{}/default/en_US/send.html'.format(
+            config['host'], config['port'])
 
-        if self._check_config('user', str):
-            self._user = config['user']
+        self._check_config('user', str)
+        self._user = config['user']
 
-        if self._check_config('password', str):
-            self._password = config['password']
+        self._check_config('password', str)
+        self._password = config['password']
 
-        if self._check_config('simcount', int):
-            self._sims = config['simcount']
+        self._check_config('simcount', int)
+        self._sims = config['simcount']
 
     def is_tele2_phone(self, phone: str) -> bool:
         """Checks if the specified phone number operator is Tele2

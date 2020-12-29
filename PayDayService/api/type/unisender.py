@@ -18,11 +18,11 @@ class Unisender(Api):
         """
         super().__init__(name, config)
 
-        if self._check_config('key', str):
-            self._api_key = config['key']
+        self._check_config('key', str)
+        self._api_key = config['key']
             
-        if self._check_config('list', int):
-            self._list = config['list']
+        self._check_config('list', int)
+        self._list = config['list']
 
     async def add(
             self,

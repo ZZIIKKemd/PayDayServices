@@ -29,7 +29,7 @@ class Api:
         """
         return self._type
 
-    def _check_config(self, fieldname: str, fieldtype: type) -> bool:
+    def _check_config(self, fieldname: str, fieldtype: type) -> None:
         """Checks if the specified field of API configuration is correct
         and matches the given type
         """
@@ -43,5 +43,3 @@ class Api:
             s += 'Необходимый тип: "{}"'
             s = s.format(self._type, self._name, fieldname, fieldtype)
             raise ApiConfigurationException(s)
-        
-        return True

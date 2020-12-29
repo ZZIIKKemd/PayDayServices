@@ -13,12 +13,12 @@ class Telegram(Api):
         """        
         super().__init__(name, config)
 
-        if self._check_config('token', str):
-            self._urlstart = 'https://api.telegram.org/bot'
-            self._urlstart += config['token'] + '/'
+        self._check_config('token', str)
+        self._urlstart = 'https://api.telegram.org/bot'
+        self._urlstart += config['token'] + '/'
             
-        if self._check_config('chat', int):
-            self._chat = config['chat']
+        self._check_config('chat', int)
+        self._chat = config['chat']
 
     async def send_msg(self, text: str) -> None:
         """Send message to Telegram chat
