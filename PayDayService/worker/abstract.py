@@ -34,22 +34,19 @@ class Worker:
         """
         return self._type
 
-    def _check_config(self, fieldname: str, fieldtype: type) -> bool:
+    def _check_config(self, fieldname: str, fieldtype: type) -> None:
         """Checks if the specified field of worker configuration is correct
         and matches the given type
         """
         if not fieldname in self._config:
-            s = 'У воркера {} с идентификатором "{}" нет поля с именем "{}"'
-            s = s.format(self._type, self._name, fieldname)
+            s = 'У воркера {} нет поля с именем "{}"'
+            s = s.format(self._name, fieldname)
             raise WorkerConfigurationException(s)
 
         if not isinstance(self._config[fieldname], fieldtype):
-            s = 'У воркера {} с идентификатором "{}" поле "{}"'
-            s += ' неверного типа. Необходимый тип: "{}"'
-            s = s.format(self._type, self._name, fieldname, fieldtype)
+            s = 'У воркера {} поле "{}" неверного типа. Необходимый тип: "{}"'
+            s = s.format(self._name, fieldname, fieldtype)
             raise WorkerConfigurationException(s)
-
-        return True
 
 
 class RoutedWorker(Worker):
@@ -96,10 +93,24 @@ class ApiUser(Worker):
         """
         super().__init__(name, config, db)
 
-        self._check_config('apis', Dict[str, str])
+        self._check_config('apis', dict)
         self._bind_apis()
 
     def _bind_apis(self) -> None:
         """Bind apis to class fields. Requires implementation.
         """
         raise NotImplementedError
+
+    def _check_api_config(self, fieldname: str):
+        """Checks if the specified field of worker api configuration
+        is exist and is string type
+        """
+        if not fieldname in self._config['apis']:
+            s = 'У воркера {} нет API с именем "{}"'
+            s = s.format(self._name, fieldname)
+            raise WorkerConfigurationException(s)
+
+        if not isinstance(self._config['apis'][fieldname], str):
+            s = 'У воркера {} поле API "{}" не является строкой'
+            s = s.format(self._name, fieldname)
+            raise WorkerConfigurationException(s)
