@@ -40,21 +40,6 @@ class Goip(Api):
         """
         return phone[1:4] in self._tele2numbers
 
-    # def form_messages(self, name):
-    #     now = datetime.now(gettz('Europe/Moscow'))
-    #     twoMinutes = now + timedelta(minutes=2)
-    #     timeData = (now, twoMinutes)
-
-    #     smsData = list()
-    #     for i in range(2):
-    #         smstext = self._texts[i]
-    #         text = name + smstext
-    #         if len(text) > 70:
-    #             text = smstext[2].upper() + smstext[3:]
-    #         smsData.append((text, timeData[i]))
-
-    #     return smsData
-
     async def _send(self, data: Dict[str, Union[int, str]]) -> None:
         """Sends message throught relay with the specified data
         """
