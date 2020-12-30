@@ -102,8 +102,8 @@ class ApiUser(Worker):
         raise NotImplementedError
 
     def _check_apis(self, fieldname: str, apis: ApiCollection):
-        """Checks if the specified field of worker api configuration
-        is exist and is string type
+        """Checks if the specified field of worker API configuration
+        is exist and is string type and that such API was initialized
         """
         if not fieldname in self._config['apis']:
             s = 'У воркера {} в конфигурационном файле нет API с именем "{}"'
