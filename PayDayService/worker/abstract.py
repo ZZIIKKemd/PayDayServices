@@ -1,3 +1,4 @@
+from api.type import ApiType
 from typing import Dict
 
 from aiohttp.web_request import Request
@@ -101,24 +102,37 @@ class ApiUser(Worker):
         """
         raise NotImplementedError
 
-    def _check_apis(self, fieldname: str, apis: ApiCollection):
-        """Checks if the specified field of worker API configuration
-        is exist and is string type and that such API was initialized
+    def _get_api(self,
+                 fieldname: str,
+                 apitype: type,
+                 apis: ApiCollection
+                 ) -> ApiType:
+        """Return specified API with needed type,
+        based on worker configuration
         """
         if not fieldname in self._config['apis']:
-            s = 'У воркера {} в конфигурационном файле нет API с именем "{}"'
+            s = 'У воркера "{}" в конфигурационном'
+            s += ' файле нет API с именем "{}"'
             s = s.format(self._name, fieldname)
             raise WorkerConfigurationException(s)
 
         apiname = self._config['apis'][fieldname]
 
         if not isinstance(apiname, str):
-            s = 'У воркера {} поле API "{}" не является строкой'
+            s = 'У воркера "{}" поле API "{}" не является строкой'
             s = s.format(self._name, fieldname)
             raise WorkerConfigurationException(s)
 
         if not apiname in apis:
-            s = 'Для воркера {} необходимо API с идентификатором "{}"'
+            s = 'Для воркера "{}" необходимо API с идентификатором "{}"'
             s += ', которого нет в списке инициализированных'
             s = s.format(self._name, apiname)
             raise WorkerConfigurationException(s)
+
+        if not isinstance(apis[apiname], apitype):
+            s = 'Необходимое для воркера "{}" API с идентификатором'
+            s += ' "{}" неверного типа. Необходимый тип: "{}"'
+            s = s.format(self._name, apiname, apitype)
+            raise WorkerConfigurationException(s)
+
+        return apis[apiname]
