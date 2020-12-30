@@ -1,6 +1,7 @@
-from typing import Any, Union
+from typing import Any
 
 from api.abstract import ApiConfigurationException
+from api.type import ApiType
 from api.type.goip import Goip
 from api.type.telegram import Telegram
 from api.type.unisender import Unisender
@@ -8,7 +9,7 @@ from api.type.unisender import Unisender
 
 class ApiFactory:
     @staticmethod
-    def new(name: str, config: Any) -> Union[Unisender, Telegram, Goip]:
+    def new(name: str, config: Any) -> ApiType:
         """Returns new API instance with the specified parameters
         """
         if not isinstance(config, dict):
