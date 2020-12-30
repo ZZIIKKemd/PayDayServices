@@ -1,8 +1,8 @@
-from api.type import ApiType
 from typing import Dict
 
 from aiohttp.web_request import Request
 from api.collection import ApiCollection
+from api.type import ApiType
 from common.database import Database
 from common.exception import ServiceException
 
