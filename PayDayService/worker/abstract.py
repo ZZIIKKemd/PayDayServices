@@ -1,6 +1,7 @@
 from typing import Dict
 
 from aiohttp.web_request import Request
+from aiohttp.web_response import Response
 from api.collection import ApiCollection
 from api.type import ApiType
 from common.database import Database
@@ -65,7 +66,7 @@ class RoutedWorker(Worker):
         """
         return '/' + self._route
 
-    def run(self, request: Request) -> None:
+    async def run(self, request: Request) -> Response:
         """Work, that should be done on web route access. Requires implementation.
         """
         raise NotImplementedError
@@ -78,7 +79,7 @@ class LoopedWorker(Worker):
         super().__init__(name, config, db)
         self._type = 'looped'
 
-    def run(self) -> None:
+    async def run(self) -> None:
         """Work, that should be done each loop. Requires implementation.
         """
         raise NotImplementedError
@@ -107,7 +108,7 @@ class ApiUser(Worker):
                  apitype: type,
                  apis: ApiCollection
                  ) -> ApiType:
-        """Return specified API with needed type,
+        """Return specified API with checking type,
         based on worker configuration
         """
         if not fieldname in self._config['apis']:
