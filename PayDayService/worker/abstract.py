@@ -88,29 +88,37 @@ class ApiUser(Worker):
                  name: str,
                  config: Dict,
                  db: Database,
-                 api: ApiCollection):
+                 apis: ApiCollection):
         """Abstract API using worker class with basic initialization
         """
         super().__init__(name, config, db)
 
         self._check_config('apis', dict)
-        self._bind_apis()
+        self._bind_apis(apis)
 
-    def _bind_apis(self) -> None:
+    def _bind_apis(self, apis: ApiCollection) -> None:
         """Bind apis to class fields. Requires implementation.
         """
         raise NotImplementedError
 
-    def _check_api_config(self, fieldname: str):
+    def _check_apis(self, fieldname: str, apis: ApiCollection):
         """Checks if the specified field of worker api configuration
         is exist and is string type
         """
         if not fieldname in self._config['apis']:
-            s = 'У воркера {} нет API с именем "{}"'
+            s = 'У воркера {} в конфигурационном файле нет API с именем "{}"'
             s = s.format(self._name, fieldname)
             raise WorkerConfigurationException(s)
 
-        if not isinstance(self._config['apis'][fieldname], str):
+        apiname = self._config['apis'][fieldname]
+
+        if not isinstance(apiname, str):
             s = 'У воркера {} поле API "{}" не является строкой'
             s = s.format(self._name, fieldname)
+            raise WorkerConfigurationException(s)
+
+        if not apiname in apis:
+            s = 'Для воркера {} необходимо API с идентификатором "{}"'
+            s += ', которого нет в списке инициализированных'
+            s = s.format(self._name, apiname)
             raise WorkerConfigurationException(s)
