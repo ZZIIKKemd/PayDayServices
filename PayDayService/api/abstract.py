@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from common.exception import ServiceException
 
@@ -29,7 +29,7 @@ class Api:
         """
         return self._type
 
-    def _check_config(self, fieldname: str, fieldtype: type) -> None:
+    def _get_config(self, fieldname: str, fieldtype: type) -> Any:
         """Checks if the specified field of API configuration is correct
         and matches the given type
         """
@@ -43,3 +43,5 @@ class Api:
             s += 'Необходимый тип: "{}"'
             s = s.format(self._type, self._name, fieldname, fieldtype)
             raise ApiConfigurationException(s)
+
+        return self._config[fieldname]

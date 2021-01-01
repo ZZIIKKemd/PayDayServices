@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, cast
 
 import aiohttp
 from api.abstract import Api, ApiException
@@ -13,19 +13,19 @@ class Telegram(Api):
         """        
         super().__init__(name, config)
 
-        self._check_config('token', str)
+        
         self._urlstart = 'https://api.telegram.org/bot'
-        self._urlstart += config['token'] + '/'
+        token = cast(str, self._get_config('token', str))
+        self._urlstart += token + '/'
             
-        self._check_config('chat', int)
-        self._chat = config['chat']
+        self._chat = cast(int, self._get_config('chat', int))
 
     async def send_msg(self, text: str) -> None:
         """Send message to Telegram chat
         """        
         url = self._urlstart + 'sendMessage'
         senddata = {
-            'chat_id': self._chat,
+            'chat_id': str(self._chat),
             'text': text
         }
 

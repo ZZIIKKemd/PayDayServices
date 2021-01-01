@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, cast
 
 import aiohttp
 from api.abstract import Api, ApiException
@@ -18,11 +18,9 @@ class Unisender(Api):
         """
         super().__init__(name, config)
 
-        self._check_config('key', str)
-        self._api_key = config['key']
-            
-        self._check_config('list', int)
-        self._list = config['list']
+        self._api_key = cast(str, self._get_config('key', str))
+
+        self._list = cast(int, self._get_config('list', int))
 
     async def add(
             self,
@@ -34,8 +32,8 @@ class Unisender(Api):
         pushdata = {
             'api_key': self._api_key,
             'fields[email]': email,
-            'list_ids': self._list,
-            'double_optin': self._double_optin,
+            'list_ids': str(self._list),
+            'double_optin': str(self._double_optin),
             'format': self._format}
         if name:
             pushdata['fields[Name]'] = name

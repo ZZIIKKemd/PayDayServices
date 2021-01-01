@@ -1,5 +1,5 @@
 from random import randint
-from typing import Dict, Union
+from typing import Dict, cast
 
 import aiohttp
 from api.abstract import Api, ApiException
@@ -21,26 +21,23 @@ class Goip(Api):
         """
         super().__init__(name, config)
 
-        self._check_config('host', str)
-        self._check_config('port', int)
-        self._url = 'http://{}:{}/default/en_US/send.html'.format(
-            config['host'], config['port'])
+        host = cast(str, self._get_config('host', str))
+        port = cast(int, self._get_config('port', int))
+        url = 'http://{}:{}/default/en_US/send.html'
+        self._url = url.format(host, port)
 
-        self._check_config('user', str)
-        self._user = config['user']
+        self._user = cast(str, self._get_config('user', str))
 
-        self._check_config('password', str)
-        self._password = config['password']
+        self._password = cast(str, self._get_config('password', str))
 
-        self._check_config('simcount', int)
-        self._sims = config['simcount']
+        self._sims = cast(int, self._get_config('simcount', int))
 
     def is_tele2_phone(self, phone: str) -> bool:
         """Checks if the specified phone number operator is Tele2
         """
         return phone[1:4] in self._tele2numbers
 
-    async def _send(self, data: Dict[str, Union[int, str]]) -> None:
+    async def _send(self, data: Dict[str, str]) -> None:
         """Sends message throught relay with the specified data
         """
         try:
@@ -80,7 +77,7 @@ class Goip(Api):
 
     async def send_random_sim(self, message: str, phone: int) -> None:
         """Sends message from random sim card
-        """        
+        """
         data = {
             'u': self._user,
             'p': self._password,
