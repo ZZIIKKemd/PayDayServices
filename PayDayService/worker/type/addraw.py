@@ -30,7 +30,7 @@ class AddRawDataWorker(ApiUser, RoutedWorker):
 
         self._send_sms = cast(bool, self._get_config('sendsms', bool))
         if self._send_sms:
-            messages = self._get_config('sendsmsmessages', List[str])
+            messages = self._get_config('messages', List[str])
             self._messages = cast(List[str], messages)
 
         self._send_uni = cast(bool, self._get_config('senduni', bool))
