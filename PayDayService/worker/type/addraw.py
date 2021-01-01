@@ -28,14 +28,12 @@ class AddRawDataWorker(ApiUser, RoutedWorker):
         super().__init__(name, config, db, apis)
         self._db = db
 
-        self._check_config('sendsms', bool)
-        self._send_sms = config['sendsms']
+        self._send_sms = cast(bool, self._get_config('sendsms', bool))
         if self._send_sms:
-            self._check_config('messages', list)
-            self._messages = config['messages']
+            messages = self._get_config('sendsmsmessages', List[str])
+            self._messages = cast(List[str], messages)
 
-        self._check_config('senduni', bool)
-        self._send_uni = config['senduni']
+        self._send_uni = cast(bool, self._get_config('senduni', bool))
 
     def _bind_apis(self, apis: ApiCollection) -> None:
         """Binds apis to class fields.
@@ -55,11 +53,11 @@ class AddRawDataWorker(ApiUser, RoutedWorker):
 
         if not 'email' in data:
             return web.Response(text='В запросе не указана почта')
-        email = data['email']            
+        email = data['email']
 
         if not 'phone' in data:
             return web.Response(text='В запросе не указан телефон')
-        phone = data['phone']            
+        phone = data['phone']
 
         try:
             await db.add_raw_entry(name, email, phone)
@@ -87,7 +85,7 @@ class AddRawDataWorker(ApiUser, RoutedWorker):
                 return web.Response(text=s)
 
         message = 'Необработанные данные записаны в базу.'
-        message +=  ' Имя: "{}", телефон: "{}", email: "{}".'
+        message += ' Имя: "{}", телефон: "{}", email: "{}".'
         message = message.format(name, phone, email)
         message += ' Данные записаны в Unisender.' if self._send_uni else ''
         message += ' Запланированы смс-сообщения.' if self._send_sms else ''

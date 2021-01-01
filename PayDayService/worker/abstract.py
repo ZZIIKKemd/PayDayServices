@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 from aiohttp.web_request import Request
 from aiohttp.web_response import Response
@@ -37,7 +37,7 @@ class Worker:
         """
         return self._type
 
-    def _check_config(self, fieldname: str, fieldtype: type) -> None:
+    def _get_config(self, fieldname: str, fieldtype: type) -> Any:
         """Checks if the specified field of worker configuration is correct
         and matches the given type
         """
@@ -51,6 +51,8 @@ class Worker:
             s = s.format(self._name, fieldname, fieldtype)
             raise WorkerConfigurationException(s)
 
+        return self._config[fieldname]
+
 
 class RoutedWorker(Worker):
     def __init__(self, name: str, config: Dict, db: Database):
@@ -59,7 +61,7 @@ class RoutedWorker(Worker):
         super().__init__(name, config, db)
         self._type = 'routed'
 
-        self._check_config('route', str)
+        self._get_config('route', str)
         self._route = config['route']
 
     def get_path(self) -> str:
@@ -98,7 +100,7 @@ class ApiUser(Worker):
         """
         super().__init__(name, config, db)
 
-        self._check_config('apis', dict)
+        self._get_config('apis', dict)
         self._bind_apis(apis)
 
     def _bind_apis(self, apis: ApiCollection) -> None:
