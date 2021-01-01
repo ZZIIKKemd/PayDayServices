@@ -27,7 +27,6 @@ class AddRawDataWorker(ApiUser, RoutedWorker):
         sends their data to Unisender and Goip apis if needed
         """
         super().__init__(name, config, db, apis)
-        self._db = db
 
         self._send_sms = cast(bool, self._get_config('sendsms', bool))
 
