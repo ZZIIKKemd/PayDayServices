@@ -68,7 +68,7 @@ class RoutedWorker(Worker):
         return '/' + self._route
 
     async def run(self, request: Request) -> Response:
-        """Work, that should be done on web route access.
+        """Doing some work on web route access.
          Requires implementation.
         """
         raise NotImplementedError
@@ -82,7 +82,7 @@ class LoopedWorker(Worker):
         self._type = 'looped'
 
     async def run(self) -> None:
-        """Work, that should be done each loop.
+        """Doing some work each loop.
         Requires implementation.
         """
         raise NotImplementedError
@@ -102,7 +102,7 @@ class ApiUser(Worker):
         self._bind_apis(apis)
 
     def _bind_apis(self, apis: ApiCollection) -> None:
-        """Bind apis to class fields.
+        """Binds apis to class fields.
         Requires implementation.
         """
         raise NotImplementedError
@@ -112,7 +112,7 @@ class ApiUser(Worker):
                  apitype: type,
                  apis: ApiCollection
                  ) -> ApiType:
-        """Return specified API with checking type,
+        """Returns specified API with checking type,
         based on worker configuration
         """
         if not fieldname in self._config['apis']:
