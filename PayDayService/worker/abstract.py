@@ -18,6 +18,7 @@ class WorkerException(ServiceException):
 
 class Worker:
     _type = ''
+    done_message = 'Сообщение о выполнении задания не было заполнено'
 
     def __init__(self, name: str, config: Dict, db: Database):
         """Abstract worker class with basic initialization
@@ -67,7 +68,8 @@ class RoutedWorker(Worker):
         return '/' + self._route
 
     async def run(self, request: Request) -> Response:
-        """Work, that should be done on web route access. Requires implementation.
+        """Work, that should be done on web route access.
+         Requires implementation.
         """
         raise NotImplementedError
 
@@ -80,7 +82,8 @@ class LoopedWorker(Worker):
         self._type = 'looped'
 
     async def run(self) -> None:
-        """Work, that should be done each loop. Requires implementation.
+        """Work, that should be done each loop.
+        Requires implementation.
         """
         raise NotImplementedError
 
@@ -99,7 +102,8 @@ class ApiUser(Worker):
         self._bind_apis(apis)
 
     def _bind_apis(self, apis: ApiCollection) -> None:
-        """Bind apis to class fields. Requires implementation.
+        """Bind apis to class fields.
+        Requires implementation.
         """
         raise NotImplementedError
 
